@@ -13,6 +13,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet"/>
     <link href="puppiesbootstrap.css"  type="text/css"  rel="stylesheet"/> 
     
+    
 
 </head>  
 <body cz-shortcut-listen="true">
@@ -42,28 +43,30 @@
     
 <!--////// End Nav //////-->
     
-<!--////// Begin About Section //////-->
+<!--////// Begin Content Form Section //////-->
 <div class="jumbotron-about">
 <div class="jumbotron">
     <div class="container">
-            
             <div class="col-md-8">
         <div class="AboutHeader">
-        <h1>ABOUT OUR PUPPIES</h1>
-            </div>
-                </div>
-                    <div class="col-md-4">
-                        <div class="BoxText">
-Puppies forever is a website that is dedicated the support and love for puppies forever. Many puppies are in pounds and need help. They are sad and hungry, but you can help change this. Go to the <strong>Our Puppies</strong> section of the website to donate to the Puppies Forever Foundation. You will be helping puppies. Forever. 
-                            </div>
-                                    </div>
+        <h1>HAVE QUESTIONS?</h1>
         </div>
+                </div>
+        <div class="col-md-4">
+            <div class="contact-form">
+            <div class="form">
+               <fieldset>
+            <input type="e-mail" class="form-control" id="exampleInputEmail1" placeholder="Enter email">                               <input type="e-mail" class="form-control" id="exampleInputName1" placeholder="Enter Name">                                 <textarea rows="6" name="message" id="message" class="form-control" placeholder="Comments"></textarea>
+                <span class="contact-form-btn"> 
+                    <p><a class="btn btn-primary btn-md" href="#puppiesportion" role="button">Submit</a></p></span>
+                   </fieldset>
+            </div>
         </div>
     </div>
-<!--///// Begin Addition Information /////-->
-
+        </div>
+</div></div>
     
-<!--///// End Addition Information /////-->
+<!--////// End Content Form Section //////-->
     
 <!--///// Begin Footer /////-->
 <footer class="footer">
@@ -97,12 +100,102 @@ Puppies forever is a website that is dedicated the support and love for puppies 
 <script src="js/bootstrap.min.js"></script>
 <script src="js/jquery.localScroll.js" type="text/javascript"></script>
 <script src="js/jquery.scrollTo.js" type="text/javascript"></script>
+<script src="js/jqBootstrapValidation.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function() {
     $('nav').localScroll({duration:800});
     });
     </script>
+
+<script type="text/javascript">$(document).ready(function () {
+    $("input#submit").click(function(){
+        $.ajax({
+            type: "POST",
+            url: "process.php", //process to mail
+            data: $('form.contact').serialize(),
+            success: functi on(msg){
+                $("#thanks").html(msg) //hide button and show thank you
+                $("#form-content").modal('hide'); //hide popup  
+            },
+            error: function(){
+                alert("failure");
+            }
+        });
+    });
+});
+    </script>
+    
+<script>
+$(function() {
+
+ $("input,textarea").jqBootstrapValidation(
+    {
+     preventSubmit: true,
+     submitError: function($form, event, errors) {
+      // something to have when submit produces an error ?
+      // Not decided if I need it yet
+     },
+     submitSuccess: function($form, event) {
+      event.preventDefault(); // prevent default submit behaviour
+       // get values from FORM
+       var name = $("input#name").val();  
+       var email = $("input#email").val(); 
+       var message = $("textarea#message").val();
+        var firstName = name; // For Success/Failure Message
+           // Check for white space in name for Success/Fail message
+        if (firstName.indexOf(' ') >= 0) {
+	   firstName = name.split(' ').slice(0, -1).join(' ');
+         }        
+	 $.ajax({
+                url: "./bin/contact_me.php",
+            	type: "POST",
+            	data: {name: name, email: email, message: message},
+            	cache: false,
+            	success: function() {  
+            	// Success message
+            	   $('#success').html("<div class='alert alert-success'>");
+            	   $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
+            		.append( "</button>");
+            	  $('#success > .alert-success')
+            		.append("<strong>Your message has been sent. </strong>");
+ 		  $('#success > .alert-success')
+ 			.append('</div>');
+ 						    
+ 		  //clear all fields
+ 		  $('#contactForm').trigger("reset");
+ 	      },
+ 	   error: function() {		
+ 		// Fail message
+ 		 $('#success').html("<div class='alert alert-danger'>");
+            	$('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
+            	 .append( "</button>");
+            	$('#success > .alert-danger').append("<strong>Sorry "+firstName+" it seems that my mail server is not responding...</strong> Could you please email me directly to <a href='mailto:me@example.com?Subject=Message_Me from myprogrammingblog.com'>me@example.com</a> ? Sorry for the inconvenience!");
+ 	        $('#success > .alert-danger').append('</div>');
+ 		//clear all fields
+ 		$('#contactForm').trigger("reset");
+ 	    },
+           })
+         },
+         filter: function() {
+                   return $(this).is(":visible");
+         },
+       });
+
+      $("a[data-toggle=\"tab\"]").click(function(e) {
+                    e.preventDefault();
+                    $(this).tab("show");
+        });
+  });
+ 
+
+/*When clicking on Full hide fail/success boxes */ 
+$('#name').focus(function() {
+     $('#success').html('');
+  });
+</script>   
+    
+
 
 </body>
 </html>
